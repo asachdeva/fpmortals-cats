@@ -18,7 +18,7 @@ trait Lookup[F[_]] { self =>
 }
 
 object LookupRandom extends Lookup[IO] {
-  def look: IO[Int] = IO { scala.util.Random.nextInt }
+  def look: IO[Int] = IO { scala.util.Random.nextInt() }
 }
 
 // trait MonadErrorState[F[_], E, S] {

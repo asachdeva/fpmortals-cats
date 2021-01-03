@@ -35,7 +35,7 @@ object Runner {
   import brokenfuture.Runner.echo
 
   implicit val TerminalIO: Terminal[IO] = new Terminal[IO] {
-    def read: IO[String]           = IO { StdIn.readLine }
+    def read: IO[String]           = IO { StdIn.readLine() }
     def write(t: String): IO[Unit] = IO { println(t) }
   }
 

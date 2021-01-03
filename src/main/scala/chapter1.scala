@@ -16,14 +16,14 @@ object `package` {
 }
 
 object TerminalSync extends Terminal[Now] {
-  def read: String           = StdIn.readLine
+  def read: String           = StdIn.readLine()
   def write(t: String): Unit = println(t)
 }
 
 class TerminalAsync(implicit EC: ExecutionContext) extends Terminal[Future] {
   // you could potentially implement these with the nio non-blocking
   // API, this implementation eats up a Thread for each operation.
-  def read: Future[String]           = Future { StdIn.readLine }
+  def read: Future[String]           = Future { StdIn.readLine() }
   def write(t: String): Future[Unit] = Future { println(t) }
 }
 
@@ -95,6 +95,6 @@ object IO {
 }
 
 object TerminalIO extends Terminal[IO] {
-  def read: IO[String]           = IO { StdIn.readLine }
+  def read: IO[String]           = IO { StdIn.readLine() }
   def write(t: String): IO[Unit] = IO { println(t) }
 }
