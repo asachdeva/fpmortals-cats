@@ -7,9 +7,9 @@ case object EUR extends Currency
 case object USD extends Currency
 
 final case class TradeTemplate(
-  payments: List[java.time.LocalDate],
-  ccy: Option[Currency],
-  otc: Option[Boolean]
+    payments: List[java.time.LocalDate],
+    ccy: Option[Currency],
+    otc: Option[Boolean]
 )
 object TradeTemplate {
   // def lastWins[A]: Monoid[Option[A]] = Monoid.instance(
@@ -32,17 +32,17 @@ object TradeTemplate {
 
   implicit val monoid: Monoid[TradeTemplate] = Monoid.instance(
     TradeTemplate(Nil, None, None),
-    (a, b) => TradeTemplate(a.payments |+| b.payments,
-                            b.ccy <+> a.ccy,
-                            b.otc <+> a.otc))
+    (a, b) =>
+      TradeTemplate(a.payments |+| b.payments, b.ccy <+> a.ccy, b.otc <+> a.otc)
+  )
 
   import java.time.{LocalDate => LD}
   val templates = List(
-    TradeTemplate(Nil,                     None,      None),
-    TradeTemplate(Nil,                     Some(EUR), None),
+    TradeTemplate(Nil, None, None),
+    TradeTemplate(Nil, Some(EUR), None),
     TradeTemplate(List(LD.of(2017, 8, 5)), Some(USD), None),
-    TradeTemplate(List(LD.of(2017, 9, 5)), None,      Some(true)),
-    TradeTemplate(Nil,                     None,      Some(false))
+    TradeTemplate(List(LD.of(2017, 9, 5)), None, Some(true)),
+    TradeTemplate(Nil, None, Some(false))
   )
 
   templates.combineAll

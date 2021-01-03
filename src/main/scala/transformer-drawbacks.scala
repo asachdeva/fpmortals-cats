@@ -41,8 +41,8 @@ object Logic {
 
   def liftK: IO ~> Ctx = {
     type Ctx1[A] = EitherT[IO, Problem, A]
-    val first : IO ~> Ctx1 = EitherT.liftK
-    val second : Ctx1 ~> Ctx = StateT.liftK
+    val first: IO ~> Ctx1 = EitherT.liftK
+    val second: Ctx1 ~> Ctx = StateT.liftK
     second.compose(first)
   }
 

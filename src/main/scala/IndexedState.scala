@@ -22,33 +22,33 @@ trait Cache[M[_]] {
 }
 object Cache {
   sealed abstract class Status
-  final case class Ready()                           extends Status
-  final case class Locked(on: Set[Int])              extends Status
+  final case class Ready() extends Status
+  final case class Locked(on: Set[Int]) extends Status
   final case class Updated(values: Map[Int, String]) extends Status
 }
 
 object Main {
 
   def wibbleise[M[_]: Monad](
-    C: Cache[M]
+      C: Cache[M]
   ): IndexedStateT[M, Ready, Ready, String] =
     for {
-      _  <- C.lock
+      _ <- C.lock
       a1 <- C.read(13)
       a2 = a1 match {
         case None    => "wibble"
         case Some(a) => a + "'"
       }
-      _  <- C.update(13, a2)
-      _  <- C.commit
+      _ <- C.update(13, a2)
+      _ <- C.commit
     } yield a2
 
   def fail[M[_]: Monad](
-    C: Cache[M]
+      C: Cache[M]
   ): IndexedStateT[M, Locked, Ready, Option[String]] =
     for {
       a1 <- C.read(13)
-      _  <- C.update(13, "wibble")
-      _  <- C.commit
+      _ <- C.update(13, "wibble")
+      _ <- C.commit
     } yield a1
 }

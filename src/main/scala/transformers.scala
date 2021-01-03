@@ -21,7 +21,7 @@ import Twitter.T
 object Difficult {
   def stars[F[_]: Monad: Twitter](name: String): F[Option[Int]] =
     for {
-      maybeUser  <- T.getUser(name)
+      maybeUser <- T.getUser(name)
       maybeStars <- maybeUser.traverse(T.getStars)
     } yield maybeStars
 }
@@ -29,17 +29,19 @@ object Difficult {
 object WithOptionT {
   def stars[F[_]: Monad: Twitter](name: String): OptionT[F, Int] =
     for {
-      user  <- OptionT(T.getUser(name))
+      user <- OptionT(T.getUser(name))
       stars <- OptionT.liftF(T.getStars(user))
     } yield stars
 }
 
 object WithMonadError {
   def stars[F[_]: Twitter](
-    name: String
+      name: String
   )(implicit F: MonadError[F, String]): F[Int] =
     for {
-      user <- T.getUser(name).flatMap(F.fromOption(_, s"user '$name' not found"))
+      user <- T
+        .getUser(name)
+        .flatMap(F.fromOption(_, s"user '$name' not found"))
       stars <- T.getStars(user)
     } yield stars
 }
@@ -47,7 +49,7 @@ object WithMonadError {
 object WithEitherT {
   def stars[F[_]: Monad: Twitter](name: String): EitherT[F, String, Int] =
     for {
-      user  <- EitherT.fromOptionF(T.getUser(name), s"user '$name' not found")
+      user <- EitherT.fromOptionF(T.getUser(name), s"user '$name' not found")
       stars <- EitherT.right(T.getStars(user))
     } yield stars
 }
@@ -55,16 +57,17 @@ object WithEitherT {
 object BetterErrors {
   final case class Meta(fqn: String, file: String, line: Int)
   object Meta {
-    implicit def gen(
-      implicit fqn: sourcecode.FullName,
-      file: sourcecode.File,
-      line: sourcecode.Line
+    implicit def gen(implicit
+        fqn: sourcecode.FullName,
+        file: sourcecode.File,
+        line: sourcecode.Line
     ): Meta =
       new Meta(fqn.value, file.value, line.value)
   }
 
   final case class Err(msg: String)(implicit val meta: Meta)
-      extends Throwable with NoStackTrace
+      extends Throwable
+      with NoStackTrace
   def main(args: Array[String]) =
     println(Err("hello world").meta)
 

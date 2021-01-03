@@ -24,11 +24,11 @@ object Hood {
 
     def more(f: Hood[A] => Option[Hood[A]]): List[Hood[A]] =
       f(hood) match {
-        case None => Nil
+        case None    => Nil
         case Some(r) => r :: r.more(f)
       }
     def positions: Hood[Hood[A]] = {
-      val left  = hood.more(_.previous)
+      val left = hood.more(_.previous)
       val right = hood.more(_.next)
       Hood(left, hood, right)
     }
@@ -65,6 +65,6 @@ object example {
         Hood([6,5,4,3,2,1],7,[8,9]),
         Hood([7,6,5,4,3,2,1],8,[9]),
         Hood([8,7,6,5,4,3,2,1],9,[])])
-   */
+     */
   }
 }

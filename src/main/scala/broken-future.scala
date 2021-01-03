@@ -15,7 +15,7 @@ trait Terminal[C[_]] {
 }
 
 class TerminalAsync(implicit EC: ExecutionContext) extends Terminal[Future] {
-  def read: Future[String]           = Future { StdIn.readLine() }
+  def read: Future[String] = Future { StdIn.readLine() }
   def write(t: String): Future[Unit] = Future { println(t) }
 }
 
@@ -24,7 +24,7 @@ object Runner {
   def echo[C[_]: Monad](implicit T: Terminal[C]): C[String] =
     for {
       in <- T.read
-      _  <- T.write(in)
+      _ <- T.write(in)
     } yield in
 
   import ExecutionContext.Implicits._

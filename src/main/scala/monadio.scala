@@ -4,14 +4,14 @@
 package monadio
 
 import scala.io.StdIn
-import scala.concurrent.{ Await, ExecutionContext, Future }
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 
 import cats._, implicits._
 
 final class IO[A] private (val interpret: () => A)
 object IO {
-  def apply[A](a: =>A): IO[A] = new IO(() => a)
+  def apply[A](a: => A): IO[A] = new IO(() => a)
 
   def fail[A](t: Throwable): IO[A] = IO(throw t)
 
@@ -35,7 +35,7 @@ object Runner {
   import brokenfuture.Runner.echo
 
   implicit val TerminalIO: Terminal[IO] = new Terminal[IO] {
-    def read: IO[String]           = IO { StdIn.readLine() }
+    def read: IO[String] = IO { StdIn.readLine() }
     def write(t: String): IO[Unit] = IO { println(t) }
   }
 

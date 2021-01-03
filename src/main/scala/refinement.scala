@@ -13,8 +13,8 @@ import refined.collection._
 import refined.auto._
 
 final case class Person(
-  name: String Refined NonEmpty,
-  age: Int Refined Positive
+    name: String Refined NonEmpty,
+    age: Int Refined Positive
 )
 
 object Main {

@@ -16,14 +16,14 @@ object `package` {
 }
 
 object TerminalSync extends Terminal[Now] {
-  def read: String           = StdIn.readLine()
+  def read: String = StdIn.readLine()
   def write(t: String): Unit = println(t)
 }
 
 class TerminalAsync(implicit EC: ExecutionContext) extends Terminal[Future] {
   // you could potentially implement these with the nio non-blocking
   // API, this implementation eats up a Thread for each operation.
-  def read: Future[String]           = Future { StdIn.readLine() }
+  def read: Future[String] = Future { StdIn.readLine() }
   def write(t: String): Future[Unit] = Future { println(t) }
 }
 
@@ -41,7 +41,7 @@ object Execution {
 
   implicit val now: Execution[Now] = new Execution[Now] {
     def doAndThen[A, B](c: A)(f: A => B): B = f(c)
-    def create[B](b: B): B                  = b
+    def create[B](b: B): B = b
   }
 
   implicit def future(implicit EC: ExecutionContext): Execution[Future] =
@@ -53,7 +53,7 @@ object Execution {
 
   implicit val deferred: Execution[IO] = new Execution[IO] {
     def doAndThen[A, B](c: IO[A])(f: A => IO[B]): IO[B] = c.flatMap(f)
-    def create[B](b: B): IO[B]                          = IO(b)
+    def create[B](b: B): IO[B] = IO(b)
   }
 }
 
@@ -64,12 +64,12 @@ object Runner {
   def echo[C[_]](implicit t: Terminal[C], e: Execution[C]): C[String] =
     for {
       in <- t.read
-      _  <- t.write(in)
+      _ <- t.write(in)
     } yield in
 
-  implicit val now: Terminal[Now]       = TerminalSync
+  implicit val now: Terminal[Now] = TerminalSync
   implicit val future: Terminal[Future] = new TerminalAsync
-  implicit val io: Terminal[IO]         = TerminalIO
+  implicit val io: Terminal[IO] = TerminalIO
 
   def main(args: Array[String]): Unit = {
     // interpret for Now (impure)
@@ -87,14 +87,14 @@ object Runner {
 }
 
 final class IO[A] private (val interpret: () => A) {
-  def map[B](f: A => B): IO[B]         = IO(f(interpret()))
+  def map[B](f: A => B): IO[B] = IO(f(interpret()))
   def flatMap[B](f: A => IO[B]): IO[B] = IO(f(interpret()).interpret())
 }
 object IO {
-  def apply[A](a: =>A): IO[A] = new IO(() => a)
+  def apply[A](a: => A): IO[A] = new IO(() => a)
 }
 
 object TerminalIO extends Terminal[IO] {
-  def read: IO[String]           = IO { StdIn.readLine() }
+  def read: IO[String] = IO { StdIn.readLine() }
   def write(t: String): IO[Unit] = IO { println(t) }
 }
